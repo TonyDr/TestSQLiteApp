@@ -56,25 +56,36 @@ public class PersonManager {
      * @return список людей
      */
     public List<Person> getPersonList() {
-        List<Person> personList = new ArrayList<>();
+        List<Person> personList = null;
         Cursor cursor = null;
         try {
             cursor = dbHelper.getReadableDatabase().query(Person.TABLE_NAME,
                     new String[]{Person.ID_FIELD, Person.FIRST_NAME_FIELD,
                             Person.SURNAME_NAME_FIELD, Person.NOTE_FIELD},
                     null, null, null, null, null);
-            while (cursor.moveToNext()) {
-                Person person = new Person();
-                person.setId(cursor.getLong(cursor.getColumnIndex(Person.ID_FIELD)));
-                person.setName(cursor.getString(cursor.getColumnIndex(Person.FIRST_NAME_FIELD)));
-                person.setSurname(cursor.getString(cursor.getColumnIndex(Person.SURNAME_NAME_FIELD)));
-                person.setNote(cursor.getString(cursor.getColumnIndex(Person.NOTE_FIELD)));
-                personList.add(person);
-            }
+            personList = parseCursor(cursor);
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
+        }
+        return personList;
+    }
+
+    /**
+     * Разбор курсора для информации по человеке
+     *
+     * @param cursor курсор
+     */
+    private List<Person> parseCursor(Cursor cursor) {
+        List<Person> personList = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            Person person = new Person();
+            person.setId(cursor.getLong(cursor.getColumnIndex(Person.ID_FIELD)));
+            person.setName(cursor.getString(cursor.getColumnIndex(Person.FIRST_NAME_FIELD)));
+            person.setSurname(cursor.getString(cursor.getColumnIndex(Person.SURNAME_NAME_FIELD)));
+            person.setNote(cursor.getString(cursor.getColumnIndex(Person.NOTE_FIELD)));
+            personList.add(person);
         }
         return personList;
     }
@@ -105,5 +116,43 @@ public class PersonManager {
         dbHelper.getWritableDatabase().delete(Person.TABLE_NAME,
                 Person.ID_FIELD + " = ? ",
                 new String[]{person.getId().toString()});
+    }
+
+    /**
+     * Получение информации по идентификатору
+     *
+     * @param personId идентификатор
+     * @return информация
+     */
+    public Person getPerson(Long personId) {
+        List<Person> personList = null;
+        Cursor cursor = null;
+        try {
+            cursor = dbHelper.getReadableDatabase().query(Person.TABLE_NAME,
+                    new String[]{Person.ID_FIELD, Person.FIRST_NAME_FIELD,
+                            Person.SURNAME_NAME_FIELD, Person.NOTE_FIELD},
+                    "_id = ?", new String[] {personId.toString()}, null, null, null);
+            personList = parseCursor(cursor);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        if (personList.size() == 0) {
+            throw new IllegalArgumentException("Can't find person with id =" + personId);
+        }
+        return personList.get(0);
+    }
+
+    /**
+     * Обновление информации
+     *
+     * @param person человек
+     */
+    public void update(Person person) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        db.update(Person.TABLE_NAME, person.getContentValues(), "_id = ? ",
+                new String[] { person.getId().toString() } );
     }
 }

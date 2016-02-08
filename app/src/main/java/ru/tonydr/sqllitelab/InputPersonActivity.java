@@ -7,7 +7,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ru.tonydr.sqllitelab.person.Person;
 import ru.tonydr.sqllitelab.person.PersonBuilder;
+import ru.tonydr.sqllitelab.person.PersonManager;
 
 /**
  * Активность для ввода информации о человеке
@@ -42,6 +44,15 @@ public class InputPersonActivity extends AppCompatActivity {
         name = (TextView) findViewById(R.id.name_field);
         surname = (TextView) findViewById(R.id.surname_field);
         note = (TextView) findViewById(R.id.note_field);
+
+        Bundle extras = getIntent().getExtras();
+        if(extras !=null) {
+            Long personId = extras.getLong("id");
+            Person person = PersonManager.getInstance(dbHelper).getPerson(personId);
+            name.setText(person.getName());
+            surname.setText(person.getSurname());
+            note.setText(person.getNote());
+        }
     }
 
     public void onDeleteButtonClick(View view) {
@@ -69,7 +80,12 @@ public class InputPersonActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(),MainActivity.class);
             startActivity(intent);
         } else {
-
+            Long personId = bundle.getLong("id");
+            Person person = PersonManager.getInstance(dbHelper).getPerson(personId);
+            person.setName(name.getText().toString());
+            person.setSurname(surname.getText().toString());
+            person.setNote(note.getText().toString());
+            PersonManager.getInstance(dbHelper).update(person);
         }
 
     }

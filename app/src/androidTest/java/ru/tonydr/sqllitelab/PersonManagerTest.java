@@ -66,6 +66,8 @@ public class PersonManagerTest extends AndroidTestCase {
         Assert.assertEquals(surname, findValue.getSurname());
         Assert.assertEquals(testNote, findValue.getNote());
 
+        Person personById = manager.getPerson(findValue.getId());
+        Assert.assertNotNull(personById);
 
         manager.delete(findValue);
         Assert.assertEquals(firstSize, manager.getPersonList().size());

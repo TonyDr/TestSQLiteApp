@@ -1,22 +1,37 @@
 package ru.tonydr.sqllitelab;
 
+import android.app.ListActivity;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.ArrayAdapter;
 
-public class MainActivity extends AppCompatActivity {
+import ru.tonydr.sqllitelab.adapter.PersonAdapter;
+import ru.tonydr.sqllitelab.person.Person;
+import ru.tonydr.sqllitelab.person.PersonManager;
 
-    private EditText nameFiled;
-    private EditText surnameField;
-    private EditText noteField;
-    private AppSQLOpenHelper myHelper = null;
-    private SQLiteDatabase db;
+public class MainActivity extends ListActivity {
+
+    private AppSQLOpenHelper dbHelper = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        myHelper = new AppSQLOpenHelper(this, "appDB", null, 1);
+        setContentView(R.layout.main_layout);
+        dbHelper = new AppSQLOpenHelper(this, "appDB", null, 1);
+
+        ArrayAdapter<Person> listAdapter = new PersonAdapter(this,
+                PersonManager.getInstance(dbHelper).getPersonList());
+        setListAdapter(listAdapter);
+
     }
+
+
+    public void onCreateButtonClick(View view) {
+        Intent i = new Intent(MainActivity.this, InputPersonActivity.class);
+        startActivity(i);
+    }
+
+
 }

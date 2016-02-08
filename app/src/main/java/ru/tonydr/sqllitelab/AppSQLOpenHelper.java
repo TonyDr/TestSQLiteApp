@@ -23,7 +23,7 @@ public class AppSQLOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(PersonManager.getInstance().getTableScript());
+        db.execSQL(PersonManager.getInstance(this).getTableScript());
     }
 
     @Override

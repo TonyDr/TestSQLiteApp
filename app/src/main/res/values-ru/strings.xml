@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SQLLiteLab</string>
-    <string name="create_button">Create</string>
+    <string name="create_button">Создать</string>
     <string name="name_label">Name</string>
     <string name="surname_label">Surname</string>
     <string name="note">Note</string>
